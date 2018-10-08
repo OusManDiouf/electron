@@ -138,19 +138,19 @@ jobs:
     displayName: Publish Build Artifacts (application zip)
     inputs:
       PathtoPublish: '$(System.DefaultWorkingDirectory)/src/out/Default/dist.zip'
-      ArtifactName: Default
+      ArtifactName: dist
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Build Artifacts (Node headers)
     inputs:
       PathtoPublish: '$(System.DefaultWorkingDirectory)/src/out/Default/gen/node_headers.tar.gz'
-      ArtifactName: Default
+      ArtifactName: node_headers
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Build Artifacts (chromedriver.zip)
     inputs:
       PathtoPublish: '$(System.DefaultWorkingDirectory)/src/out/Default/chromedriver.zip'
-      ArtifactName: Default
+      ArtifactName: chromedriver
 
 - job: run_electron_tests
   displayName: Run Electron tests
@@ -158,12 +158,22 @@ jobs:
   timeoutInMinutes: 20
   steps:
 
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: src/electron'
+    inputs:
+      TargetFolder: src/electron
+
   - task: DownloadBuildArtifacts@0
     inputs:
       buildType: 'current'
+      artifactName: dist
+
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      buildType: 'current'
+      artifactName: node_headers
 
   - bash: |
-      # mkdir src && cd src
       ls $SYSTEM_ARTIFACTS_DIRECTORY
 
   - bash: |
